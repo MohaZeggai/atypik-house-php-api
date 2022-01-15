@@ -34,7 +34,7 @@ class UserController extends AbstractController
             "data" => $user,
         ]);
     }
-
+    
     /**
      * @Route("/user", name="create_user", methods={"POST"})
      */
