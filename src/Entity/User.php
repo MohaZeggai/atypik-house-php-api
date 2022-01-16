@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -16,62 +17,66 @@ class User
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"user"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=25)
+     * @Groups({"user"})
      */
     private $nom;
 
     /**
      * @ORM\Column(type="string", length=25)
+     * @Groups({"user"})
      */
     private $prenom;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"user"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"user"})
      */
     private $password;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"user"})
      */
     private $image;
 
     /**
      * @ORM\Column(type="date", nullable=true)
+     * @Groups({"user"})
      */
     private $date_naissance;
 
     /**
      * @ORM\Column(type="string", length=15, nullable=true)
+     * @Groups({"user"})
      */
     private $telephone;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"user"})
      */
     private $adresse;
 
     /**
      * @ORM\Column(type="string", length=25)
+     * @Groups({"user"})
      */
     private $role;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Location::class, mappedBy="user_id", orphanRemoval=true)
-     */
-    private $locations;
-
     public function __construct()
     {
-        $this->locations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -190,30 +195,30 @@ class User
     /**
      * @return Collection|Location[]
      */
-    public function getLocations(): Collection
-    {
-        return $this->locations;
-    }
+    // public function getLocations(): Collection
+    // {
+    //     return $this->locations;
+    // }
 
-    public function addLocation(Location $location): self
-    {
-        if (!$this->locations->contains($location)) {
-            $this->locations[] = $location;
-            $location->setUserId($this);
-        }
+    // public function addLocation(Location $location): self
+    // {
+    //     if (!$this->locations->contains($location)) {
+    //         $this->locations[] = $location;
+    //         $location->setUser($this);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function removeLocation(Location $location): self
-    {
-        if ($this->locations->removeElement($location)) {
-            // set the owning side to null (unless already changed)
-            if ($location->getUserId() === $this) {
-                $location->setUserId(null);
-            }
-        }
+    // public function removeLocation(Location $location): self
+    // {
+    //     if ($this->locations->removeElement($location)) {
+    //         // set the owning side to null (unless already changed)
+    //         if ($location->getUser() === $this) {
+    //             $location->setUser(null);
+    //         }
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 }

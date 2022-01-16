@@ -3,36 +3,51 @@
 namespace App\Controller;
 
 use App\Entity\Location;
+use App\Entity\User;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class LocationController extends AbstractController
 {
     /**
      * @Route("/location", name="get_locations", methods={"GET"})
      */
-    public function getAll(ManagerRegistry $doctrine)
+    public function getAll(
+        ManagerRegistry $doctrine,
+        SerializerInterface $serializer)
     {
         $locations = $doctrine->getRepository(Location::class)->findAll();
 
-        return $this->json([
-            "data" => $locations,
-        ]);
+        return new JsonResponse(
+            $serializer->serialize($locations, "json", ["groups" => ["location", "user"]]),
+            JsonResponse::HTTP_OK,
+            [],
+            true
+        );
     }
 
     /**
      * @Route("/location/{id}", name="get_one_location", methods={"GET"})
      */
-    public function getOne(ManagerRegistry $doctrine, string $id)
+    public function getOne(
+        ManagerRegistry $doctrine,
+        string $id,
+        SerializerInterface $serializer)
     {
+        // Find the location in database
         $location = $doctrine->getRepository(Location::class)->findOneBy(array("id" => $id));
 
-        return $this->json([
-            "data" => $location,
-        ]);
+        return new JsonResponse(
+            $serializer->serialize($location, "json", ["groups" => ["location", "user"]]),
+            JsonResponse::HTTP_OK,
+            [],
+            true
+        );
     }
     
     /**
@@ -45,15 +60,20 @@ class LocationController extends AbstractController
     {
         $entityManager = $doctrine->getManager();
         
-        $location = $serializer->deserialize($request->getContent(), Location::class, "json");
+        // Deserialize the location from request
+        $location = $serializer->deserialize($request->getContent(), Location::class, "json", ["groups" => ["location", "user"]]);
 
+        dump($location);
         $entityManager->persist($location);
         $entityManager->flush();
 
-        return $this->json([
-            "message" => "Location created!",
-            "data" => $location
-        ]);
+
+        return new JsonResponse(
+            $serializer->serialize($location, "json", ["groups" => ["location", "user"]]),
+            JsonResponse::HTTP_CREATED,
+            [],
+            true
+        );
     }
 
     /**
@@ -81,16 +101,21 @@ class LocationController extends AbstractController
         $entityManager->persist($location);
         $entityManager->flush();
 
-        return $this->json([
-            "message" => "Location updated!",
-            "data" => $location
-        ]);
+        return new JsonResponse(
+            $serializer->serialize($location, "json", ["groups" => ["location", "user"]]),
+            JsonResponse::HTTP_CREATED,
+            [],
+            true
+        );
     }
 
     /**
      * @Route("/location/{id}", name="delete_location", methods={"DELETE"})
      */
-    public function delete(ManagerRegistry $doctrine, int $id)
+    public function delete(
+        ManagerRegistry $doctrine,
+        int $id,
+        SerializerInterface $serializer)
     {
         $entityManager = $doctrine->getManager();
 
@@ -99,9 +124,11 @@ class LocationController extends AbstractController
         $entityManager->remove($location);
         $entityManager->flush();
 
-        return $this->json([
-            "message" => "Location deleted!",
-            "location" => $location
-        ]);
+        return new JsonResponse(
+            $serializer->serialize($location, "json", ["groups" => ["location", "user"]]),
+            JsonResponse::HTTP_CREATED,
+            [],
+            true
+        );
     }
 }

@@ -6,35 +6,48 @@ use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class UserController extends AbstractController
 {
     /**
      * @Route("/user", name="get_users", methods={"GET"})
      */
-    public function getAll(ManagerRegistry $doctrine)
+    public function getAll(
+        ManagerRegistry $doctrine,
+        SerializerInterface $serializer)
     {
         $users = $doctrine->getRepository(User::class)->findAll();
 
-        return $this->json([
-            "data" => $users,
-        ]);
+        return new JsonResponse(
+            $serializer->serialize($users, "json", ["groups" => "user"]),
+            JsonResponse::HTTP_OK,
+            [],
+            true
+        );
     }
 
     /**
      * @Route("/user/{id}", name="get_one_user", methods={"GET"})
      */
-    public function getOne(ManagerRegistry $doctrine, string $id)
+    public function getOne(
+        ManagerRegistry $doctrine,
+        string $id,
+        SerializerInterface $serializer)
     {
         $user = $doctrine->getRepository(User::class)->findOneBy(array("id" => $id));
 
-        return $this->json([
-            "data" => $user,
-        ]);
+        return new JsonResponse(
+            $serializer->serialize($user, "json", ["groups" => "user"]),
+            JsonResponse::HTTP_OK,
+            [],
+            true
+        );
     }
-    
+
     /**
      * @Route("/user", name="create_user", methods={"POST"})
      */
@@ -50,10 +63,12 @@ class UserController extends AbstractController
         $entityManager->persist($user);
         $entityManager->flush();
 
-        return $this->json([
-            "message" => "User created!",
-            "data" => $user
-        ]);
+        return new JsonResponse(
+            $serializer->serialize($user, "json", ["groups" => "user"]),
+            JsonResponse::HTTP_OK,
+            [],
+            true
+        );
     }
 
     /**
@@ -82,16 +97,21 @@ class UserController extends AbstractController
         $entityManager->persist($user);
         $entityManager->flush();
 
-        return $this->json([
-            "message" => "User updated!",
-            "data" => $user
-        ]);
+        return new JsonResponse(
+            $serializer->serialize($user, "json", ["groups" => "user"]),
+            JsonResponse::HTTP_OK,
+            [],
+            true
+        );
     }
 
     /**
      * @Route("/user/{id}", name="delete_user", methods={"DELETE"})
      */
-    public function delete(ManagerRegistry $doctrine, int $id)
+    public function delete(
+        ManagerRegistry $doctrine,
+        int $id,
+        SerializerInterface $serializer)
     {
         $entityManager = $doctrine->getManager();
 
@@ -100,9 +120,11 @@ class UserController extends AbstractController
         $entityManager->remove($user);
         $entityManager->flush();
 
-        return $this->json([
-            "message" => "User deleted!",
-            "user" => $user
-        ]);
+        return new JsonResponse(
+            $serializer->serialize($user, "json", ["groups" => "user"]),
+            JsonResponse::HTTP_OK,
+            [],
+            true
+        );
     }
 }

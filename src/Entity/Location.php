@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Entity;
+
+use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\LocationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -13,52 +15,62 @@ class Location
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"location"})
      */
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="locations")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="locations", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"user"})
      */
-    private $user_id;
+    private $user;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"location"})
      */
     private $titre;
 
     /**
      * @ORM\Column(type="string", length=25)
+     * @Groups({"location"})
      */
     private $type;
 
     /**
      * @ORM\Column(type="string", length=15)
+     * @Groups({"location"})
      */
     private $surface;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"location"})
      */
     private $image;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"location"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"location"})
      */
     private $planning;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"location"})
      */
     private $prix;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"location"})
      */
     private $adresse;
 
@@ -67,14 +79,14 @@ class Location
         return $this->id;
     }
 
-    public function getUserId(): ?User
+    public function getUser(): ?User
     {
-        return $this->user_id;
+        return $this->user;
     }
 
-    public function setUserId(?User $user_id): self
+    public function setUser(?User $user): self
     {
-        $this->user_id = $user_id;
+        $this->user = $user;
 
         return $this;
     }
